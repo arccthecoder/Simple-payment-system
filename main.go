@@ -1,128 +1,22 @@
 package main
 
 import (
-	"fmt"
-	"strconv"
-	"time"
+	"payment/payment"
+	"payment/payment/methods"
+
+	"github.com/k0kubun/pp"
 )
 
-// [10_000, 50_000, 12_000, 6_000, 100_000]
-// 6_000
-// 10_000
-// 12_000...
-
-/* slice:
-O(n)
-1 -> 10us
-10 -> 100us
-100 -> 1000us
-1_000_000 -> 10_000_000us -> 10s
-slice[0] -> 10us
-slice[1_000_000] -> 10us
-НО ПОИСК ЭТЬО ПИЗДЕЦ
-
-map:
-O(1)
-1 -> 10us
-10 -> 10us
-100 -> 10us....
-
-/*
-1. сохранять большое количество PaymentInfo
-2. находить конкретный элемент PaymentInfo в множестве
-*/
-
-type PaymentInfo struct {
-	ID          int
-	Description string
-	Usd         int
-	Cancelled   bool
-}
-
-type PaymentModuleSlice struct {
-	s []PaymentInfo
-}
-
-func (m *PaymentModuleSlice) AddInfo(info PaymentInfo) {
-	m.s = append(m.s, info)
-}
-
-func (m *PaymentModuleSlice) GetInfo(id int) PaymentInfo {
-	for _, info := range m.s {
-		if info.ID == id {
-			return info
-		}
-	}
-	return PaymentInfo{}
-}
-
-// -----------------------------------
-type PaymentModuleMap struct {
-	m map[int]PaymentInfo
-}
-
-func (m *PaymentModuleMap) AddInfo(info PaymentInfo) {
-	m.m[info.ID] = info
-}
-
-func (m *PaymentModuleMap) GetInfo(id int) PaymentInfo {
-	info, ok := m.m[id]
-	if !ok {
-		return PaymentInfo{}
-	}
-	return info
-}
-
 func main() {
-	pSlice := PaymentModuleSlice{}
-	pMap := PaymentModuleMap{
-		m: make(map[int]PaymentInfo),
-	}
+	method := methods.NewCrypto()
 
-	iterations := 200_000
+	paymentModule := payment.NewPaymentModule(method)
 
-	// ---------------------------------------
-	before := time.Now()
-	for i := 0; i < iterations; i++ {
-		info := PaymentInfo{
-			ID:          i,
-			Description: strconv.Itoa(i),
-		}
+	paymentModule.Pay("Бургер", 5)
+	paymentModule.Pay("Телефон", 500)
+	paymentModule.Pay("Игра", 20)
 
-		pMap.AddInfo(info)
-	}
+	AllInfo := paymentModule.Allinfo()
 
-	fmt.Println("map add:", time.Since(before))
-
-	before = time.Now()
-
-	for i := 0; i < iterations; i++ {
-		info := PaymentInfo{
-			ID:          i,
-			Description: strconv.Itoa(i),
-		}
-
-		pSlice.AddInfo(info)
-	}
-
-	fmt.Println("slice add:", time.Since(before))
-	// --------------------------------
-
-	before = time.Now()
-	for i := 0; i < iterations; i++ {
-		info := pMap.GetInfo(i)
-		_ = info
-	}
-
-	fmt.Println("map get:", time.Since(before))
-
-	before = time.Now()
-
-	for i := 0; i < iterations; i++ {
-		info := pSlice.GetInfo(i)
-		_ = info
-	}
-
-	fmt.Println("slice get:", time.Since(before))
-
+	pp.Println("Все оплаты:", AllInfo)
 }

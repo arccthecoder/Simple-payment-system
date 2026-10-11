@@ -58,10 +58,22 @@ func main() {
 		m: make(map[int]PaymentInfo),
 	}
 
-	iterations := 1_000
+	iterations := 100_000
 
 	// ---------------------------------------
 	before := time.Now()
+	for i := 0; i < iterations; i++ {
+		info := PaymentInfo{
+			ID:          i,
+			Description: strconv.Itoa(i),
+		}
+
+		pMap.AddInfo(info)
+	}
+
+	fmt.Println("map add:", time.Since(before))
+
+	before = time.Now()
 
 	for i := 0; i < iterations; i++ {
 		info := PaymentInfo{
@@ -73,19 +85,15 @@ func main() {
 	}
 
 	fmt.Println("slice add:", time.Since(before))
+	// --------------------------------
 
 	before = time.Now()
 	for i := 0; i < iterations; i++ {
-		info := PaymentInfo{
-			ID:          i,
-			Description: strconv.Itoa(i),
-		}
-
-		pMap.AddInfo(info)
+		info := pMap.GetInfo(i)
+		_ = info
 	}
 
-	fmt.Println("mapp add:", time.Since(before))
-	// --------------------------------
+	fmt.Println("map get:", time.Since(before))
 
 	before = time.Now()
 
@@ -95,13 +103,5 @@ func main() {
 	}
 
 	fmt.Println("slice get:", time.Since(before))
-
-	before = time.Now()
-	for i := 0; i < iterations; i++ {
-		info := pMap.GetInfo(i)
-		_ = info
-	}
-
-	fmt.Println("mapp get:", time.Since(before))
 
 }

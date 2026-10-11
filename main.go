@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-
-	"github.com/k0kubun/pp"
+	"strconv"
+	"time"
 )
 
 /*
@@ -53,26 +53,37 @@ func (m *PaymentModuleMap) GetInfo(id int) PaymentInfo {
 }
 
 func main() {
-	info1 := PaymentInfo{
-		ID:          10,
-		Description: "burger",
-		Usd:         5,
-		Cancelled:   false,
-	}
-
 	pSlice := PaymentModuleSlice{}
 	pMap := PaymentModuleMap{
-		m: map[int]PaymentInfo{},
+		m: make(map[int]PaymentInfo),
 	}
 
-	pSlice.AddInfo(info1)
-	pMap.AddInfo(info1)
+	iterations := 100
 
-	pp.Println("pslice:", pSlice)
-	pp.Println("pmap", pMap)
+	// -- замерить время
+	before := time.Now()
 
-	i1 := pSlice.GetInfo(10)
-	i2 := pMap.GetInfo(10)
+	for i := 0; i < iterations; i++ {
+		info := PaymentInfo{
+			ID:          i,
+			Description: strconv.Itoa(i),
+		}
 
-	fmt.Println(i1, i2)
-}
+		pSlice.AddInfo(info)
+	}
+
+	fmt.Println("slice add:", time.Since(before))
+	// -- до сюда
+	// тоже время замерить
+	before = time.Now()
+	for i := 0; i < iterations; i++ {
+		info := PaymentInfo{
+			ID:          i,
+			Description: strconv.Itoa(i),
+		}
+
+		pMap.AddInfo(info)
+	}
+
+	fmt.Println("mapp add:", time.Since(before))
+} // до сюда епт

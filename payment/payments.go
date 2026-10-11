@@ -27,7 +27,7 @@ func NewPaymentModule(paymentMethod PaymentMethod) *PaymentModule {
 Возвращает:
 ID проведенной операции
 */
-func (p PaymentModule) Pay(description string, usd int) int {
+func (p *PaymentModule) Pay(description string, usd int) int {
 	// 1. проводить оплату
 	// 2. получать id проведенной оплаты
 	id := p.paymentMethod.Pay(usd)
@@ -56,7 +56,18 @@ func (p PaymentModule) Pay(description string, usd int) int {
 Возвращает:
 - ничего не возвращает
 */
-func (p PaymentModule) Cancel() {}
+func (p *PaymentModule) Cancel(id int) {
+	info, ok := p.paymentsInfo[id]
+	if !ok {
+		return
+	}
+
+	p.paymentMethod.Cancel(id)
+
+	info.Cancelled = true
+
+	p.paymentsInfo[id] = info
+}
 
 /*
 	Метод Info()
@@ -66,7 +77,14 @@ func (p PaymentModule) Cancel() {}
 Возвращает:
 информацию о проведенной операции
 */
-func (p PaymentModule) Info() {}
+func (p *PaymentModule) Info(id int) PaymentInfo {
+	info, ok := p.paymentsInfo[id]
+	if !ok {
+		return PaymentInfo{}
+	}
+
+	return info
+}
 
 /*
 	Метод AllInfo()
@@ -76,4 +94,11 @@ func (p PaymentModule) Info() {}
 Возвращает:
 1. информацию о всех проведенных операциях
 */
-func (p PaymentModule) AllInfo() {}
+func (p *PaymentModule) AllInfo() map[int]PaymentInfo {
+	tempMap := make(map[int]PaymentInfo, len(p.paymentsInfo))
+	for k, v := range p.paymentsInfo {
+		tempMap[k] = v
+	}
+
+	return tempMap
+}

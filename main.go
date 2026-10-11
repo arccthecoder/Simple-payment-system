@@ -58,9 +58,9 @@ func main() {
 		m: make(map[int]PaymentInfo),
 	}
 
-	iterations := 100
+	iterations := 1_000
 
-	// -- замерить время
+	// ---------------------------------------
 	before := time.Now()
 
 	for i := 0; i < iterations; i++ {
@@ -73,8 +73,7 @@ func main() {
 	}
 
 	fmt.Println("slice add:", time.Since(before))
-	// -- до сюда
-	// тоже время замерить
+
 	before = time.Now()
 	for i := 0; i < iterations; i++ {
 		info := PaymentInfo{
@@ -86,4 +85,23 @@ func main() {
 	}
 
 	fmt.Println("mapp add:", time.Since(before))
-} // до сюда епт
+	// --------------------------------
+
+	before = time.Now()
+
+	for i := 0; i < iterations; i++ {
+		info := pSlice.GetInfo(i)
+		_ = info
+	}
+
+	fmt.Println("slice get:", time.Since(before))
+
+	before = time.Now()
+	for i := 0; i < iterations; i++ {
+		info := pMap.GetInfo(i)
+		_ = info
+	}
+
+	fmt.Println("mapp get:", time.Since(before))
+
+}

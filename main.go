@@ -2,9 +2,30 @@ package main
 
 import (
 	"fmt"
-
-	"github.com/k0kubun/pp"
+	"strconv"
+	"time"
 )
+
+// [10_000, 50_000, 12_000, 6_000, 100_000]
+// 6_000
+// 10_000
+// 12_000...
+
+/* slice:
+O(n)
+1 -> 10us
+10 -> 100us
+100 -> 1000us
+1_000_000 -> 10_000_000us -> 10s
+slice[0] -> 10us
+slice[1_000_000] -> 10us
+НО ПОИСК ЭТЬО ПИЗДЕЦ
+
+map:
+O(1)
+1 -> 10us
+10 -> 10us
+100 -> 10us....
 
 /*
 1. сохранять большое количество PaymentInfo
@@ -53,26 +74,55 @@ func (m *PaymentModuleMap) GetInfo(id int) PaymentInfo {
 }
 
 func main() {
-	info1 := PaymentInfo{
-		ID:          10,
-		Description: "burger",
-		Usd:         5,
-		Cancelled:   false,
-	}
-
 	pSlice := PaymentModuleSlice{}
 	pMap := PaymentModuleMap{
-		m: map[int]PaymentInfo{},
+		m: make(map[int]PaymentInfo),
 	}
 
-	pSlice.AddInfo(info1)
-	pMap.AddInfo(info1)
+	iterations := 200_000
 
-	pp.Println("pslice:", pSlice)
-	pp.Println("pmap", pMap)
+	// ---------------------------------------
+	before := time.Now()
+	for i := 0; i < iterations; i++ {
+		info := PaymentInfo{
+			ID:          i,
+			Description: strconv.Itoa(i),
+		}
 
-	i1 := pSlice.GetInfo(10)
-	i2 := pMap.GetInfo(10)
+		pMap.AddInfo(info)
+	}
 
-	fmt.Println(i1, i2)
+	fmt.Println("map add:", time.Since(before))
+
+	before = time.Now()
+
+	for i := 0; i < iterations; i++ {
+		info := PaymentInfo{
+			ID:          i,
+			Description: strconv.Itoa(i),
+		}
+
+		pSlice.AddInfo(info)
+	}
+
+	fmt.Println("slice add:", time.Since(before))
+	// --------------------------------
+
+	before = time.Now()
+	for i := 0; i < iterations; i++ {
+		info := pMap.GetInfo(i)
+		_ = info
+	}
+
+	fmt.Println("map get:", time.Since(before))
+
+	before = time.Now()
+
+	for i := 0; i < iterations; i++ {
+		info := pSlice.GetInfo(i)
+		_ = info
+	}
+
+	fmt.Println("slice get:", time.Since(before))
+
 }

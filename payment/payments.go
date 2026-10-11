@@ -6,13 +6,14 @@ type PaymentMethod interface {
 }
 
 type PaymentModule struct {
-	// как сохранять информацию об оплатах
+	paymentsInfo map[int]PaymentInfo
 
 	paymentMethod PaymentMethod
 }
 
 func NewPaymentModule(paymentMethod PaymentMethod) *PaymentModule {
 	return &PaymentModule{
+		paymentsInfo:  make(map[int]PaymentInfo),
 		paymentMethod: paymentMethod,
 	}
 }
@@ -27,13 +28,8 @@ func NewPaymentModule(paymentMethod PaymentMethod) *PaymentModule {
 ID проведенной операции
 */
 func (p PaymentModule) Pay(description string, usd int) int {
-	/* 1. проводить оплату
-	2. получать id проведенной оплаты
-	3. сохранять информацию о проведенной операции
-	- описание операции
-	- сколько было потрачено
-	- отмененная ли операция
-	4. возвращать id проведенной операции*/
+	// 1. проводить оплату
+	// 2. получать id проведенной оплаты
 	id := p.paymentMethod.Pay(usd)
 
 	info := PaymentInfo{
@@ -41,6 +37,15 @@ func (p PaymentModule) Pay(description string, usd int) int {
 		Usd:         usd,
 		Cancelled:   false,
 	}
+
+	// 3. сохранять информацию о проведенной операции
+	// - описание операции
+	// - сколько было потрачено
+	// - отмененная ли операция
+	p.paymentsInfo[id] = info
+
+	// 4. возвращать id проведенной операции
+	return id
 }
 
 /*

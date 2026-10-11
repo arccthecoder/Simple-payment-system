@@ -1,22 +1,27 @@
 package main
 
 import (
-	"payment/payment"
-	"payment/payment/methods"
+	payment "payment/payments"
+	"payment/payments/methods"
 
 	"github.com/k0kubun/pp"
 )
 
 func main() {
-	method := methods.NewCrypto()
+	method := methods.NewBonus()
 
 	paymentModule := payment.NewPaymentModule(method)
 
 	paymentModule.Pay("Бургер", 5)
-	paymentModule.Pay("Телефон", 500)
-	paymentModule.Pay("Игра", 20)
+	idPhone := paymentModule.Pay("Телефон", 500)
+	idGame := paymentModule.Pay("Игра", 20)
 
-	AllInfo := paymentModule.Allinfo()
+	paymentModule.Cancel(idPhone)
+
+	AllInfo := paymentModule.AllInfo()
 
 	pp.Println("Все оплаты:", AllInfo)
+
+	gameInfo := paymentModule.Info(idGame)
+	pp.Println(gameInfo)
 }

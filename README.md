@@ -1,1 +1,1 @@
-ИМИТАЦИЯ ПЛАТЕЖНОЙ СИСТЕМЫ ДЛЯ ВЕБ-СТРУКТУР
+Simulation of a payment system **(WIP)**

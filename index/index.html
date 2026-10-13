@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+	<title>PERMACH — онлайн-касса и приём платежей</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Geologica:wght@300;400;600;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+		<g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+			<symbol id="i-card" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20M6 15h4"/></symbol>
+			<symbol id="i-receipt" viewBox="0 0 24 24"><path d="M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2z"/><path d="M9 8h6M9 12h6"/></symbol>
+			<symbol id="i-plug" viewBox="0 0 24 24"><path d="M9 3v5M15 3v5M6 8h12v3a6 6 0 0 1-12 0zM12 17v4"/></symbol>
+			<symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></symbol>
+			<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></symbol>
+			<symbol id="i-repeat" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5l2 2M20 12a8 8 0 0 1-14 5l-2-2M20 4v5h-5M4 20v-5h5"/></symbol>
+			<symbol id="i-check" viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6"/></symbol>
+			<symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+			<symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></symbol>
+			<symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></symbol>
+			<symbol id="i-gift" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4"/><path d="M5 12v9h14v-9M12 8v13M12 8c-3 0-5-4-2-4 2 0 2 4 2 4zM12 8c3 0 5-4 2-4-2 0-2 4-2 4z"/></symbol>
+		</g>
+	</svg>
+
+	<header class="top">
+		<div class="wrap nav">
+			<a href="#" class="logo"><svg class="ic"><use href="#i-receipt"/></svg><span>PERMA<b>CH</b></span></a>
+			<nav>
+				<a href="#demo">Демо</a><a href="#how">Как работает</a><a href="#live">Панель</a><a href="#calc">Калькулятор</a><a href="#perks">Бонусы</a>
+			</nav>
+			<div class="row">
+				<button class="sq" id="theme" aria-label="Тема"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 4a8 8 0 0 0 0 16z" fill="currentColor"/></svg></button>
+				<button class="btn" data-open>Подключиться</button>
+			</div>
+		</div>
+	</header>
+
+	<main>
+		<section class="hero">
+			<i class="blob b1"></i><i class="blob b2"></i>
+			<div class="wrap hgrid">
+				<div class="rv">
+					<span class="tag mono">54-ФЗ / СБП / КАРТЫ</span>
+					<h1>Деньги принимаем. <em>Чеки пробиваем.</em> Вы продаёте.</h1>
+					<p class="lead">Платёжный шлюз и облачная онлайн-касса в одном договоре. Запуск за один день, без оборудования и скрытых платежей.</p>
+					<div class="row">
+						<button class="btn big" data-open>Начать бесплатно <svg class="ic"><use href="#i-arrow"/></svg></button>
+						<a class="btn ghost big" href="#demo">Попробовать демо</a>
+					</div>
+					<div class="stats mono">
+						<div><b data-n="12400">0</b>магазинов</div>
+						<div><b data-n="99.98" data-d="2">0</b>% аптайм</div>
+						<div><b data-n="1.8" data-d="1">0</b>сек на платёж</div>
+					</div>
+				</div>
+
+				<div class="term rv" id="demo">
+					<div class="screen">
+						<div class="mono cap">ДЕМО-ТЕРМИНАЛ · соберите заказ</div>
+						<div id="items"></div>
+						<div class="methods" id="methods">
+							<label><input type="radio" name="m" value="Карта" checked><span>Карта</span></label>
+							<label><input type="radio" name="m" value="СБП"><span>СБП</span></label>
+							<label><input type="radio" name="m" value="Кошелёк"><span>Кошелёк</span></label>
+						</div>
+						<div class="tot"><span>К оплате</span><b id="total" class="mono">0 ₽</b></div>
+						<button class="btn pay" id="pay">Оплатить</button>
+						<div class="prog" id="prog"><i></i></div>
+						<div class="mono status" id="status">Добавьте товары в корзину</div>
+					</div>
+					<div class="slot"></div>
+					<div class="paper" id="paper"></div>
+				</div>
+			</div>
+		</section>
+
+		<div class="marq"><div class="mono" id="marq"></div></div>
+
+		<section class="wrap" id="features">
+			<h2 class="rv"><span class="num mono">01</span> Что вы получаете</h2>
+			<div class="bento">
+				<div class="bx wide tilt rv"><svg class="ic xl"><use href="#i-card"/></svg><h3>Все способы оплаты</h3><p>Карты, СБП, кошельки и рассрочка. Конверсия растёт, когда клиент платит так, как удобно ему.</p>
+					<div class="chips mono"><span>Visa</span><span>Mir</span><span>СБП</span><span>QR</span><span>Pay</span></div></div>
+				<div class="bx tilt rv"><svg class="ic xl"><use href="#i-receipt"/></svg><h3>Касса 54-ФЗ</h3><p>Чек уходит в ОФД и клиенту за секунду.</p></div>
+				<div class="bx tilt rv"><svg class="ic xl"><use href="#i-plug"/></svg><h3>Модули CMS</h3><p>Tilda, WordPress, Bitrix, API.</p></div>
+				<div class="bx tilt rv"><svg class="ic xl"><use href="#i-repeat"/></svg><h3>Подписки</h3><p>Автосписания без повторного ввода карты.</p></div>
+				<div class="bx wide dark tilt rv"><svg class="ic xl"><use href="#i-shield"/></svg><h3>Защита уровня банка</h3><p>PCI DSS, 3-D Secure, антифрод на каждый платёж. Спорные операции разбираем сами.</p></div>
+			</div>
+		</section>
+
+		<section class="wrap" id="how">
+			<h2 class="rv"><span class="num mono">02</span> Как идёт платёж</h2>
+			<div class="how rv">
+				<div class="steps" id="steps"></div>
+				<div class="flow">
+					<svg viewBox="0 0 520 150" id="flow">
+						<path id="route" d="M50 75H470" stroke="var(--bd)" stroke-width="3" stroke-dasharray="6 8" fill="none"/>
+						<circle id="dot" r="7" fill="var(--acc)" cx="50" cy="75"/>
+						<g class="nodes mono"></g>
+					</svg>
+					<p id="stepText"></p>
+				</div>
+			</div>
+		</section>
+
+		<section class="live" id="live">
+			<div class="wrap">
+				<h2 class="rv"><span class="num mono">03</span> Личный кабинет в реальном времени</h2>
+				<div class="dash rv">
+					<div class="kpi mono">
+						<div><small>Оборот сегодня</small><b id="sum">0 ₽</b></div>
+						<div><small>Операций</small><b id="cnt">0</b></div>
+						<div><small>Чеков в ОФД</small><b id="ofd">0</b></div>
+					</div>
+					<svg viewBox="0 0 400 90" class="spark"><polyline id="line" fill="none" stroke="var(--acc)" stroke-width="2.5"/></svg>
+					<ul class="feed mono" id="feed"></ul>
+				</div>
+			</div>
+		</section>
+
+		<section class="wrap" id="calc">
+			<h2 class="rv"><span class="num mono">04</span> Сколько вы сэкономите</h2>
+			<div class="calc rv">
+				<div>
+					<label>Оборот в месяц: <b id="turnV" class="mono"></b></label>
+					<input type="range" id="turn" min="50000" max="5000000" step="50000" value="800000">
+					<label>Способ оплаты</label>
+					<select id="method"><option value="2.9">Карты — 2,9%</option><option value="0.7">СБП — 0,7%</option><option value="3.5">Кошельки — 3,5%</option></select>
+				</div>
+				<div class="bars mono">
+					<div class="bar"><span>Другие: эквайринг + касса</span><i id="b1"></i><b id="v1"></b></div>
+					<div class="bar me"><span>PERMACH</span><i id="b2"></i><b id="v2"></b></div>
+					<p class="save">Экономия в год: <b id="sv"></b></p>
+				</div>
+			</div>
+		</section>
+
+		<section class="wrap" id="perks">
+			<h2 class="rv"><span class="num mono">05</span> Почему стоит начать с нами</h2>
+			<div class="perks">
+				<div class="pk rv"><svg class="ic xl"><use href="#i-gift"/></svg><b class="mono">30 дней</b><p>Без комиссии на первые 100 000 ₽ оборота.</p></div>
+				<div class="pk rv"><svg class="ic xl"><use href="#i-bolt"/></svg><b class="mono">1 день</b><p>От заявки до первого платежа. Подключим сами.</p></div>
+				<div class="pk rv"><svg class="ic xl"><use href="#i-user"/></svg><b class="mono">Менеджер</b><p>Живой человек на связи, а не очередь в чате.</p></div>
+				<div class="pk rv"><svg class="ic xl"><use href="#i-check"/></svg><b class="mono">Перенос</b><p>Бесплатно перенесём настройки от прежнего провайдера.</p></div>
+			</div>
+			<div class="cta rv">
+				<div><h3>Запустите приём платежей до конца недели</h3><p>Оставьте заявку, и мы пришлём тестовые ключи за 15 минут.</p></div>
+				<button class="btn big" data-open>Получить ключи</button>
+			</div>
+		</section>
+
+		<section class="wrap narrow" id="faq">
+			<h2 class="rv"><span class="num mono">06</span> Вопросы</h2>
+			<details><summary>Нужна ли своя онлайн-касса?</summary><p>Нет, облачная касса входит в сервис.</p></details>
+			<details><summary>Как быстро приходят деньги?</summary><p>На следующий рабочий день после платежа.</p></details>
+			<details><summary>Подходит ли ИП и самозанятым?</summary><p>Да, чеки формируются под ваш режим налогообложения.</p></details>
+		</section>
+	</main>
+
+	<footer>
+		<div class="wrap">
+			<span>© 2026 PERMACH. Учебный макет, не является реальным платёжным сервисом.</span>
+			<small class="mono">Разработчики проекта: TWELVE12 и AQUAMARINEAA</small>
+		</div>
+	</footer>
+
+	<div class="modal" id="modal">
+		<div class="mbox">
+			<h3>Заявка на подключение</h3>
+			<div id="form">
+				<label>Название магазина</label><input id="shop" placeholder="Мой магазин">
+				<label>Email</label><input id="email" type="email" placeholder="you@example.com">
+				<div id="err"></div>
+				<div class="row"><button class="btn" id="send">Отправить</button><button class="btn ghost" id="close">Отмена</button></div>
+			</div>
+			<div id="done" hidden><p>Заявка принята. Ключи придут на <b id="em2"></b>.</p><button class="btn" id="close2">Закрыть</button></div>
+		</div>
+	</div>
+	<script src="script.js"></script>
+</body>
+</html>

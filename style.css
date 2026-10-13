@@ -36,6 +36,7 @@ nav a:hover::after{transform:scaleX(1)}
 .tag{display:inline-block;font-size:12px;letter-spacing:.12em;color:var(--pr);border:1px solid var(--acc);padding:4px 10px;border-radius:6px;margin-bottom:18px}
 h1{font-size:52px;line-height:1.05;font-weight:800;margin-bottom:18px}
 h1 em{font-style:normal;color:var(--pr);background:linear-gradient(transparent 62%,var(--acc) 62%)}
+:root[data-theme="dark"] h1 em{background:none}
 .lead{font-size:18px;color:var(--mut);max-width:520px;margin:0 0 28px}
 .stats{display:flex;gap:30px;margin-top:36px;font-size:13px;color:var(--mut);flex-wrap:wrap}
 .stats b{display:block;font-size:26px;color:var(--tx);font-weight:500}

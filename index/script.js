@@ -52,22 +52,74 @@ $('#items').onclick = e => {
 	$('#prog i').style.width = 0; $('#status').textContent = 'Добавьте товары в корзину';
 	renderItems();
 };
-$('#pay').onclick = () => {
+$('#pay').onclick = async () => {
 	const method = document.querySelector('input[name=m]:checked').value;
-	const steps = ['Проверка платежа…', 'Подтверждение банка…', 'Чек отправлен в ОФД…', 'Оплачено'];
-	const pay = $('#pay'); pay.disabled = true;
-	steps.forEach((t, k) => setTimeout(() => {
-		$('#status').textContent = t; $('#prog i').style.width = (k + 1) * 25 + '%';
-		if (k === 3) showReceipt(method);
-	}, k * 800));
+	const total = goods.reduce((sum, item, index) => {
+		return sum + item[1] * qty[index];
+	}, 0);
+
+	if (!total) {
+		return;
+	}
+
+	const payment = {
+		description: `Оплата через ${method}`,
+		usd: total
+	};
+
+	const payButton = $('#pay');
+	payButton.disabled = true;
+	$('#status').textContent = 'Отправка платежа…';
+
+	try {
+		const response = await fetch('/api/payments', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(payment)
+		});
+
+		if (!response.ok) {
+			throw new Error('Ошибка HTTP: ' + response.status);
+		}
+
+		const result = await response.json();
+
+		$('#status').textContent = `Оплачено. ID платежа: ${result.id}`;
+		$('#prog i').style.width = '100%';
+
+		showReceipt(method, result.id);
+	} catch (error) {
+		console.error(error);
+		$('#status').textContent = 'Не удалось выполнить оплату';
+	} finally {
+		payButton.disabled = false;
+	}
 };
-function showReceipt(method) {
-	const total = goods.reduce((a, g, i) => a + g[1] * qty[i], 0);
-	$('#paper').innerHTML = '<div><b>ЧЕК № ' + Math.floor(10000 + Math.random() * 89999) + '</b><span>приход</span></div><hr>' +
-		goods.map((g, i) => qty[i] ? `<div><span>${g[0]} ×${qty[i]}</span><span>${fmt(g[1] * qty[i])}</span></div>` : '').join('') +
-		`<hr><div><span>НДС 20%</span><span>${fmt(total / 6)}</span></div><div><b>ИТОГО</b><b>${fmt(total)}</b></div><div><span>Оплата</span><span>${method}</span></div><div><span>ОФД</span><span>отправлен</span></div>`;
+function showReceipt(method, paymentId) {
+	const total = goods.reduce((sum, item, index) => {
+		return sum + item[1] * qty[index];
+	}, 0);
+
+	$('#paper').innerHTML =
+		'<div><b>ЧЕК № ' + paymentId + '</b><span>приход</span></div><hr>' +
+		goods
+			.map((item, index) =>
+				qty[index]
+					? `<div>
+							<span>${item[0]} ×${qty[index]}</span>
+							<span>${fmt(item[1] * qty[index])}</span>
+						</div>`
+					: ''
+			)
+			.join('') +
+		`<hr>
+		<div><span>НДС 20%</span><span>${fmt(total / 6)}</span></div>
+		<div><b>ИТОГО</b><b>${fmt(total)}</b></div>
+		<div><span>Оплата</span><span>${method}</span></div>`;
+
 	requestAnimationFrame(() => $('#paper').classList.add('out'));
-	$('#pay').disabled = false;
 }
 renderItems();
 

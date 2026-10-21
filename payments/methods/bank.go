@@ -11,9 +11,9 @@ func NewBank() Bank {
 	return Bank{}
 }
 
-func (c Bank) Pay(usd int) int {
+func (c Bank) Pay(rub int) int {
 	fmt.Println("Оплата банковской картой")
-	fmt.Println("Размер оплаты:", usd, "USD")
+	fmt.Println("Размер оплаты:", rub, "рублей")
 
 	return rand.Int()
 }

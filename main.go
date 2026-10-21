@@ -14,6 +14,7 @@ import (
 type createPaymentRequest struct {
 	Description string `json:"description"`
 	Usd         int    `json:"usd"`
+	Method      string `json:"method"`
 }
 
 func main() {
@@ -31,12 +32,19 @@ func main() {
 				return
 			}
 
-			if request.Description == "" || request.Usd <= 0 {
-				http.Error(w, `{"error":"description and positive usd are required"}`, http.StatusBadRequest)
+			if request.Description == "" || request.Usd <= 0 || request.Method == "" {
+				http.Error(w, `{"error":"description, method and positive usd are required"}`, http.StatusBadRequest)
 				return
 			}
 
-			id := paymentModule.Pay(request.Description, request.Usd)
+			paymentMethod, ok := selectedPaymentMethod(request.Method)
+			if !ok {
+				http.Error(w, `{"error":"unsupported payment method"}`, http.StatusBadRequest)
+				return
+			}
+
+			id := paymentModule.PayWithMethod(paymentMethod, request.Description, request.Usd)
+			log.Printf("Пользователь выбрал способ оплаты: %s (платёж ID: %d)", request.Method, id)
 
 			json.NewEncoder(w).Encode(map[string]int{
 				"id": id,
@@ -82,4 +90,17 @@ func main() {
 
 	log.Println("Server started on http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
+}
+
+func selectedPaymentMethod(method string) (payment.PaymentMethod, bool) {
+	switch method {
+	case "Карта":
+		return methods.NewBank(), true
+	case "СБП":
+		return methods.NewSBP(), true
+	case "Кошелёк":
+		return methods.NewWallet(), true
+	default:
+		return nil, false
+	}
 }

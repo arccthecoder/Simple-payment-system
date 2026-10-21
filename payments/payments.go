@@ -6,14 +6,19 @@ type PaymentMethod interface {
 }
 
 type PaymentModule struct {
-	paymentsInfo map[int]PaymentInfo
+	paymentsInfo map[int]paymentRecord
 
 	paymentMethod PaymentMethod
 }
 
+type paymentRecord struct {
+	info   PaymentInfo
+	method PaymentMethod
+}
+
 func NewPaymentModule(paymentMethod PaymentMethod) *PaymentModule {
 	return &PaymentModule{
-		paymentsInfo:  make(map[int]PaymentInfo),
+		paymentsInfo:  make(map[int]paymentRecord),
 		paymentMethod: paymentMethod,
 	}
 }
@@ -28,9 +33,11 @@ func NewPaymentModule(paymentMethod PaymentMethod) *PaymentModule {
 ID проведенной операции
 */
 func (p *PaymentModule) Pay(description string, usd int) int {
-	// 1. проводить оплату
-	// 2. получать id проведенной оплаты
-	id := p.paymentMethod.Pay(usd)
+	return p.PayWithMethod(p.paymentMethod, description, usd)
+}
+
+func (p *PaymentModule) PayWithMethod(method PaymentMethod, description string, usd int) int {
+	id := method.Pay(usd)
 
 	info := PaymentInfo{
 		Description: description,
@@ -42,9 +49,11 @@ func (p *PaymentModule) Pay(description string, usd int) int {
 	// - описание операции
 	// - сколько было потрачено
 	// - отмененная ли операция
-	p.paymentsInfo[id] = info
+	p.paymentsInfo[id] = paymentRecord{
+		info:   info,
+		method: method,
+	}
 
-	// 4. возвращать id проведенной операции
 	return id
 }
 
@@ -57,16 +66,16 @@ func (p *PaymentModule) Pay(description string, usd int) int {
 - ничего не возвращает
 */
 func (p *PaymentModule) Cancel(id int) {
-	info, ok := p.paymentsInfo[id]
+	record, ok := p.paymentsInfo[id]
 	if !ok {
 		return
 	}
 
-	p.paymentMethod.Cancel(id)
+	record.method.Cancel(id)
 
-	info.Cancelled = true
+	record.info.Cancelled = true
 
-	p.paymentsInfo[id] = info
+	p.paymentsInfo[id] = record
 }
 
 /*
@@ -78,12 +87,12 @@ func (p *PaymentModule) Cancel(id int) {
 информацию о проведенной операции
 */
 func (p *PaymentModule) Info(id int) PaymentInfo {
-	info, ok := p.paymentsInfo[id]
+	record, ok := p.paymentsInfo[id]
 	if !ok {
 		return PaymentInfo{}
 	}
 
-	return info
+	return record.info
 }
 
 /*
@@ -97,7 +106,7 @@ func (p *PaymentModule) Info(id int) PaymentInfo {
 func (p *PaymentModule) AllInfo() map[int]PaymentInfo {
 	tempMap := make(map[int]PaymentInfo, len(p.paymentsInfo))
 	for k, v := range p.paymentsInfo {
-		tempMap[k] = v
+		tempMap[k] = v.info
 	}
 
 	return tempMap

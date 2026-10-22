@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Личный кабинет · PERMACH</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@300;400;600;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="account.css">
+  <script src="analytics.js" defer></script><script src="account.js" defer></script>
+</head>
+<body>
+  <svg class="icon-library" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
+    <symbol id="account-receipt" viewBox="0 0 24 24"><path d="M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2zM9 8h6M9 12h6"/></symbol>
+    <symbol id="account-overview" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+    <symbol id="account-chart" viewBox="0 0 24 24"><path d="M3 3v18h18M7 15l4-5 3 3 5-7"/></symbol>
+    <symbol id="account-transfers" viewBox="0 0 24 24"><path d="M3 7h18M17 3l4 4-4 4M21 17H3M7 13l-4 4 4 4"/></symbol>
+    <symbol id="account-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  </defs></svg>
+  <aside class="sidebar">
+    <a class="logo" href="/"><svg class="ic" aria-hidden="true"><use href="#account-receipt"/></svg><span>PERMA<b>CH</b></span></a>
+    <div class="store"><span class="avatar">М</span><div><strong>Мой магазин</strong><small>Демонстрационный кабинет</small></div></div>
+    <div class="menu"><a class="selected" href="#overview"><svg class="ic" aria-hidden="true"><use href="#account-overview"/></svg>Обзор</a><a href="#analytics"><svg class="ic" aria-hidden="true"><use href="#account-chart"/></svg>Аналитика</a><a href="#operations"><svg class="ic" aria-hidden="true"><use href="#account-transfers"/></svg>Операции</a><button id="nav-create"><svg class="ic" aria-hidden="true"><use href="#account-plus"/></svg>Новый платёж</button></div>
+    <div class="sidebar-bottom"><span class="online">● Сервер подключён</span><a href="/">← На главную</a></div>
+  </aside>
+  <main class="workspace" id="overview">
+    <header class="account-top"><span>Личный кабинет <span class="separator">/</span> <strong id="current-section">Обзор</strong></span><button class="sq" id="theme" aria-label="Переключить тему">◐</button></header>
+    <div class="heading"><div><div class="eyebrow">ВАШ БИЗНЕС В ЦИФРАХ</div><h1>Всё под контролем.</h1><p>Платежи и операции вашего магазина в одном месте.</p></div><button class="btn" id="create"><svg class="ic" aria-hidden="true"><use href="#account-plus"/></svg>Новый платёж</button></div>
+    <p class="demo-note"><strong>Демо-режим</strong> · Без реальных списаний. Общий список операций очищается при перезапуске сервера.</p>
+    <div id="notice" role="status" aria-live="polite"></div>
+    <div class="summary">
+      <article class="metric primary"><span>Принято, ₽</span><b id="revenue">—</b><small>Сумма действующих операций</small><span class="metric-symbol">↗</span></article>
+      <article class="metric"><span>Всего операций</span><b id="count">—</b><small id="active">—</small></article>
+      <article class="metric"><span>Средний платёж</span><b id="average">—</b><small>По действующим операциям</small></article>
+      <article class="metric"><span>Отменено</span><b id="cancelled">—</b><small id="cancelled-sum">—</small></article>
+    </div>
+    <div class="insights"><article class="panel"><div class="panel-title"><h2>Структура операций</h2><span class="muted">Текущая сессия</span></div><div class="distribution"><div class="donut" id="donut"><b id="share">—</b><span>действующих</span></div><div class="legend"><p><i></i> Действующие <b id="legend-active">—</b></p><p><i class="cancel-dot"></i> Отменённые <b id="legend-cancelled">—</b></p><small>Статистика по платежам текущего запуска сервера.</small></div></div></article><article class="panel top-payments"><div class="panel-title"><h2>Крупнейшие платежи</h2><span class="muted">Действующие</span></div><div id="top-payments"></div></article></div>
+    <section class="analytics-section" id="analytics">
+      <div class="analytics-heading"><div><div class="eyebrow">АНАЛИТИКА ПЛАТЕЖЕЙ</div><h2>За цифрами — ваш бизнес</h2></div><span class="period-label">За текущий запуск сервера</span></div>
+      <div class="analytics-grid"><article class="panel amount-panel"><div class="panel-title"><h2>Распределение сумм</h2><select id="chart-scope" aria-label="Операции для графика"><option value="active">Действующие</option><option value="all">Все операции</option></select></div><p class="muted">Количество платежей в каждом диапазоне · ₽</p><div id="histogram" class="histogram" aria-label="Распределение платежей по суммам"></div></article><article class="panel health-panel"><div class="panel-title"><h2>Показатели операций</h2><span class="health-icon">↗</span></div><dl class="health-stats"><div><dt>Медианный платёж</dt><dd id="median">—</dd></div><div><dt>Минимальный платёж</dt><dd id="minimum">—</dd></div><div><dt>Максимальный платёж</dt><dd id="maximum">—</dd></div><div><dt>Доля отмен по сумме</dt><dd id="cancel-rate">—</dd></div></dl><p class="muted">Медиана, минимум и максимум рассчитаны по действующим платежам.</p></article></div>
+      <div class="insight-strip"><span class="insight-mark">✦</span><p id="insight-text">Создайте первую операцию, чтобы увидеть аналитику.</p></div>
+    </section>
+    <section class="panel operations" id="operations"><div class="panel-title"><h2>Операции <span id="result-count"></span></h2><div class="row"><button class="btn ghost compact" id="refresh">↻ Обновить</button><button class="btn ghost compact" id="export">↓ CSV</button></div></div>
+      <div class="filters"><input type="search" id="search" aria-label="Поиск операций" placeholder="Поиск по описанию или ID…"><select id="filter" aria-label="Статус операции"><option value="all">Все статусы</option><option value="active">Действующие</option><option value="cancelled">Отменённые</option></select><select id="sort" aria-label="Сортировка операций"><option value="amount-desc">Сумма: по убыванию</option><option value="amount-asc">Сумма: по возрастанию</option><option value="description">Описание: А–Я</option></select></div>
+      <div class="table-scroll"><table><thead><tr><th>Операция</th><th>Сумма, ₽</th><th>Статус</th><th><span class="sr-only">Действия</span></th></tr></thead><tbody id="payments"></tbody></table></div><div id="empty" class="empty" hidden><span>↔</span><h3>Пока нет операций</h3><p>Создайте первый платёж — он появится здесь.</p></div>
+      <div class="table-footer"><span id="updated">Загрузка операций…</span><div class="pagination"><button id="prev-page" class="sq" aria-label="Предыдущая страница">←</button><span id="page-label">1 / 1</span><button id="next-page" class="sq" aria-label="Следующая страница">→</button></div></div>
+    </section>
+    <footer class="account-footer">PERMACH <span>Учебная платёжная система · Демо-кабинет без авторизации</span></footer>
+  </main>
+  <dialog id="details-dialog" aria-label="Детали операции"><div class="panel-title"><h2>Детали операции</h2><button class="sq" id="close-details" aria-label="Закрыть подробности">×</button></div><dl id="payment-details" class="health-stats"></dl><p class="muted">Даты и способ оплаты не сохраняются текущей версией сервера.</p></dialog>
+  <dialog id="payment-dialog" aria-label="Новый платёж"><form id="payment-form"><div class="panel-title"><h2>Новый платёж</h2><button type="button" class="sq" id="close" aria-label="Закрыть">×</button></div><p class="muted">Создайте тестовую операцию без списания денег.</p><label for="description">Описание</label><input id="description" name="description" required maxlength="200" placeholder="Например, заказ № 1042"><label for="amount">Сумма, ₽</label><input id="amount" name="amount" type="number" required min="1" max="1000000000" step="1" placeholder="100"><label for="method">Способ оплаты</label><select id="method" name="method"><option>Карта</option><option>СБП</option><option>Кошелёк</option></select><p id="form-error" role="alert"></p><button class="btn" id="submit">Создать платёж</button></form></dialog>
+</body></html>

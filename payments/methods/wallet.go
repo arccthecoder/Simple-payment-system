@@ -11,9 +11,9 @@ func NewWallet() Wallet {
 	return Wallet{}
 }
 
-func (Wallet) Pay(usd int) int {
+func (Wallet) Pay(rub int) int {
 	fmt.Println("Оплата через электронный кошелёк")
-	fmt.Println("Размер оплаты:", usd, "руб.")
+	fmt.Println("Размер оплаты:", rub, "руб.")
 
 	return rand.Int()
 }

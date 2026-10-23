@@ -1,7 +1,7 @@
 package payment
 
 type PaymentMethod interface {
-	Pay(usd int) int
+	Pay(rub int) int
 	Cancel(id int)
 }
 
@@ -32,16 +32,16 @@ func NewPaymentModule(paymentMethod PaymentMethod) *PaymentModule {
 Возвращает:
 ID проведенной операции
 */
-func (p *PaymentModule) Pay(description string, usd int) int {
-	return p.PayWithMethod(p.paymentMethod, description, usd)
+func (p *PaymentModule) Pay(description string, rub int) int {
+	return p.PayWithMethod(p.paymentMethod, description, rub)
 }
 
-func (p *PaymentModule) PayWithMethod(method PaymentMethod, description string, usd int) int {
-	id := method.Pay(usd)
+func (p *PaymentModule) PayWithMethod(method PaymentMethod, description string, rub int) int {
+	id := method.Pay(rub)
 
 	info := PaymentInfo{
 		Description: description,
-		Usd:         usd,
+		Rub:         rub,
 		Cancelled:   false,
 	}
 

@@ -11,9 +11,9 @@ func NewPayPal() Paypal {
 	return Paypal{}
 }
 
-func (c Paypal) Pay(usd int) int {
+func (c Paypal) Pay(rub int) int {
 	fmt.Println("Оплата через PayPal")
-	fmt.Println("Размер оплаты:", usd, "USD")
+	fmt.Println("Размер оплаты:", rub, "руб.")
 
 	return rand.Int()
 }

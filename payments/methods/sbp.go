@@ -11,9 +11,9 @@ func NewSBP() SBP {
 	return SBP{}
 }
 
-func (SBP) Pay(usd int) int {
+func (SBP) Pay(rub int) int {
 	fmt.Println("Оплата через СБП")
-	fmt.Println("Размер оплаты:", usd, "руб.")
+	fmt.Println("Размер оплаты:", rub, "руб.")
 
 	return rand.Int()
 }

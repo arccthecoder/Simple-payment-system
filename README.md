@@ -83,13 +83,15 @@ Content-Type: application/json
 ```json
 {
   "description": "Покупка товара",
-  "usd": 100,
+  "rub": 100,
   "method": "Карта"
 }
 ```
 
-Поля `description` и `method` должны быть непустыми, а `usd` — положительным
-целым числом. Допустимые значения `method` для HTTP API: `Карта`, `СБП` и
+Поля `description` и `method` должны быть непустыми, а `rub` — положительным
+целым числом в рублях: `100` означает 100 ₽. Все способы оплаты принимают
+сумму в рублях; конвертация в другие валюты и бонусы не выполняется.
+Допустимые значения `method` для HTTP API: `Карта`, `СБП` и
 `Кошелёк`.
 
 Пример через `curl`:
@@ -97,7 +99,7 @@ Content-Type: application/json
 ```bash
 curl -X POST http://localhost:8080/api/payments \
   -H "Content-Type: application/json" \
-  -d '{"description":"Покупка товара","usd":100,"method":"Карта"}'
+  -d '{"description":"Покупка товара","rub":100,"method":"Карта"}'
 ```
 
 Успешный ответ содержит сгенерированный ID:
@@ -126,7 +128,7 @@ curl http://localhost:8080/api/payments
 {
   "123456789": {
     "Description": "Покупка товара",
-    "Usd": 100,
+    "Rub": 100,
     "Cancelled": false
   }
 }
@@ -147,7 +149,7 @@ curl http://localhost:8080/api/payments/123456789
 ```json
 {
   "Description": "Покупка товара",
-  "Usd": 100,
+  "Rub": 100,
   "Cancelled": false
 }
 ```
@@ -217,7 +219,7 @@ paymentID := paymentModule.PayWithMethod(
 
 ```go
 type PaymentMethod interface {
-    Pay(usd int) int
+    Pay(rub int) int
     Cancel(id int)
 }
 ```
@@ -247,7 +249,7 @@ HTTP-сервер в `main.go` дополнительно валидирует �
 ```go
 type Wallet struct{}
 
-func (Wallet) Pay(usd int) int {
+func (Wallet) Pay(rub int) int {
     // Логика симуляции оплаты.
     return 1
 }
@@ -285,7 +287,7 @@ func (Wallet) Cancel(id int) {
 ```go
 type PaymentInfo struct {
     Description string
-    Usd         int
+    Rub         int
     Cancelled   bool
 }
 ```

@@ -64,7 +64,7 @@ $('#pay').onclick = async () => {
 
 	const payment = {
 		description: `Оплата через ${method}`,
-		usd: total,
+		rub: total,
 		method
 	};
 

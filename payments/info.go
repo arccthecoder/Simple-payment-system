@@ -2,6 +2,6 @@ package payment
 
 type PaymentInfo struct {
 	Description string
-	Usd         int
+	Rub         int
 	Cancelled   bool
 }

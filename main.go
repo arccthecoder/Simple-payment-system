@@ -13,7 +13,7 @@ import (
 
 type createPaymentRequest struct {
 	Description string `json:"description"`
-	Usd         int    `json:"usd"`
+	Rub         int    `json:"rub"`
 	Method      string `json:"method"`
 }
 
@@ -37,8 +37,8 @@ func main() {
 			}
 
 			// проверяем обязательные поля и корректность суммы платежа.
-			if request.Description == "" || request.Usd <= 0 || request.Method == "" {
-				http.Error(w, `{"error":"description, method and positive usd are required"}`, http.StatusBadRequest)
+			if request.Description == "" || request.Rub <= 0 || request.Method == "" {
+				http.Error(w, `{"error":"description, method and positive rub are required"}`, http.StatusBadRequest)
 				return
 			}
 
@@ -50,8 +50,8 @@ func main() {
 			}
 
 			// создаём платеж и возвращаем его идентификатор клиенту.
-			id := paymentModule.PayWithMethod(paymentMethod, request.Description, request.Usd)
-			log.Printf("Пользователь выбрал способ оплаты: %s (платёж ID: %d)", request.Method, id)
+			id := paymentModule.PayWithMethod(paymentMethod, request.Description, request.Rub)
+			log.Printf("Создан платёж: ID=%d, описание=%q, сумма=%d ₽, способ оплаты=%s", id, request.Description, request.Rub, request.Method)
 
 			json.NewEncoder(w).Encode(map[string]int{
 				"id": id,

@@ -11,9 +11,9 @@ func NewBonus() Bonus {
 	return Bonus{}
 }
 
-func (c Bonus) Pay(usd int) int {
+func (c Bonus) Pay(rub int) int {
 	fmt.Println("Оплата бонусами")
-	fmt.Println("Размер оплаты:", usd, "бонусов")
+	fmt.Println("Размер оплаты:", rub, "руб.")
 
 	return rand.Int()
 }

@@ -44,7 +44,7 @@
 			<i class="blob b1"></i><i class="blob b2"></i>
 			<div class="wrap hgrid">
 				<div class="rv">
-					<span class="tag mono">54-ФЗ / КОШЕЛЁК / CRYPTO / PAYPAL</span>
+					<span class="tag mono">54-ФЗ / КОШЕЛЁК / КАРТА / СБП / CRYPTO / PAYPAL</span>
 					<h1>Деньги принимаем. <em>Чеки пробиваем.</em> Вы продаёте.</h1>
 					<p class="lead">Платёжный шлюз и облачная онлайн-касса в одном договоре. Запуск за один день, без оборудования и скрытых платежей.</p>
 					<div class="row">
@@ -64,6 +64,8 @@
 						<div id="items"></div>
 						<div class="methods" id="methods">
 							<label><input type="radio" name="m" value="Кошелёк" checked><span>Кошелёк</span></label>
+							<label><input type="radio" name="m" value="Карта"><span>Карта</span></label>
+							<label><input type="radio" name="m" value="СБП"><span>СБП</span></label>
 							<label><input type="radio" name="m" value="Crypto"><span>Crypto</span></label>
 							<label><input type="radio" name="m" value="PayPal"><span>PayPal</span></label>
 						</div>
@@ -83,8 +85,8 @@
 		<section class="wrap" id="features">
 			<h2 class="rv"><span class="num mono">01</span> Что вы получаете</h2>
 			<div class="bento">
-				<div class="bx wide tilt rv"><svg class="ic xl"><use href="#i-card"/></svg><h3>Все способы оплаты</h3><p>Кошелёк, crypto, PayPal и рассрочка. Конверсия растёт, когда клиент платит так, как удобно ему.</p>
-					<div class="chips mono"><span>Кошелёк</span><span>Crypto</span><span>USDT</span><span>PayPal</span></div></div>
+				<div class="bx wide tilt rv"><svg class="ic xl"><use href="#i-card"/></svg><h3>Все способы оплаты</h3><p>Кошелёк, карта, СБП, crypto, PayPal и рассрочка. Конверсия растёт, когда клиент платит так, как удобно ему.</p>
+					<div class="chips mono"><span>Кошелёк</span><span>Карта</span><span>СБП</span><span>Crypto</span><span>USDT</span><span>PayPal</span></div></div>
 				<div class="bx tilt rv"><svg class="ic xl"><use href="#i-receipt"/></svg><h3>Касса 54-ФЗ</h3><p>Чек уходит в ОФД и клиенту за секунду.</p></div>
 				<div class="bx tilt rv"><svg class="ic xl"><use href="#i-plug"/></svg><h3>Модули CMS</h3><p>Tilda, WordPress, Bitrix, API.</p></div>
 				<div class="bx tilt rv"><svg class="ic xl"><use href="#i-repeat"/></svg><h3>Подписки</h3><p>Автосписания без повторного ввода карты.</p></div>
@@ -129,7 +131,7 @@
 					<label>Оборот в месяц: <b id="turnV" class="mono"></b></label>
 					<input type="range" id="turn" min="50000" max="5000000" step="50000" value="800000">
 					<label>Способ оплаты</label>
-					<select id="method"><option value="3.5" data-m="Кошелёк">Кошелёк — 3,5%</option><option value="1" data-m="Crypto">Crypto — 1,0%</option><option value="3.4" data-m="PayPal">PayPal — 3,4%</option></select>
+					<select id="method"><option value="3.5" data-m="Кошелёк">Кошелёк — 3,5%</option><option value="2.9" data-m="Карта">Карта — 2,9%</option><option value="0.7" data-m="СБП">СБП — 0,7%</option><option value="1" data-m="Crypto">Crypto — 1,0%</option><option value="3.4" data-m="PayPal">PayPal — 3,4%</option></select>
 				</div>
 				<div class="bars mono">
 					<div class="bar"><span>Другие: эквайринг + касса</span><i id="b1"></i><b id="v1"></b></div>

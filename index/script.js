@@ -3,6 +3,8 @@ const $ = s => document.querySelector(s);
 // Все суммы в коде считаются в рублях, а в нужную валюту переводятся только при показе.
 const CUR = {
 	'Кошелёк': { code: 'RUB', sym: '₽', rate: 1, d: 0 },
+	'Карта': { code: 'RUB', sym: '₽', rate: 1, d: 0 },
+	'СБП': { code: 'RUB', sym: '₽', rate: 1, d: 0 },
 	'Crypto': { code: 'USDT', sym: 'USDT', rate: 83, d: 2 },
 	'PayPal': { code: 'USD', sym: '$', rate: 83, d: 2 }
 };
@@ -34,7 +36,7 @@ document.querySelectorAll('[data-n]').forEach(el => {
 });
 
 // бегущая строка
-$('#marq').textContent = ('КОШЕЛЁК · CRYPTO · USDT · PAYPAL · РАССРОЧКА · ПОДПИСКИ · ЧЕКИ 54-ФЗ · ВОЗВРАТЫ · API · ').repeat(6);
+$('#marq').textContent = ('КОШЕЛЁК · КАРТА · СБП · CRYPTO · USDT · PAYPAL · РАССРОЧКА · ПОДПИСКИ · ЧЕКИ 54-ФЗ · ВОЗВРАТЫ · API · ').repeat(6);
 
 // наклон карточек за курсором
 document.querySelectorAll('.tilt').forEach(c => {
@@ -167,9 +169,9 @@ timer = setInterval(() => setStep((cur + 1) % 4), 2800);
 
 // живая панель
 let sum = 0, cnt = 0, pts = Array(20).fill(40);
-const mths = ['Кошелёк', 'Crypto', 'PayPal'];
+const mths = ['Кошелёк', 'Карта', 'СБП', 'Crypto', 'PayPal'];
 function tick() {
-	const a = Math.round((500 + Math.random() * 7000) / 10) * 10, m = mths[Math.floor(Math.random() * 3)];
+	const a = Math.round((500 + Math.random() * 7000) / 10) * 10, m = mths[Math.floor(Math.random() * mths.length)];
 	sum += a; cnt++;
 	$('#sum').textContent = fmt(sum, CUR['Кошелёк']); $('#cnt').textContent = cnt; $('#ofd').textContent = cnt;
 	const li = document.createElement('li');

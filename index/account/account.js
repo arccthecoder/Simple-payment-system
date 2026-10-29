@@ -1,6 +1,18 @@
 'use strict';
 const $ = selector => document.querySelector(selector);
 const money = value => new Intl.NumberFormat('ru-RU', {style: 'currency', currency: 'RUB', maximumFractionDigits: 0}).format(value);
+// Способы оплаты и их валюты. Сервер хранит только рубли (Rub), поэтому сумма в USDT/$ переводится в ₽ по демо-курсу (ЦБ РФ ≈ 83 ₽/$).
+const CUR = {'Кошелёк': {code: 'RUB', sym: '₽', rate: 1, d: 0}, 'Crypto': {code: 'USDT', sym: 'USDT', rate: 83, d: 2}, 'PayPal': {code: 'USD', sym: '$', rate: 83, d: 2}};
+const num = value => value.toLocaleString('ru-RU', {maximumFractionDigits: 2});
+function limits(c) { return c.rate === 1 ? {min: 1, max: 1000000000} : {min: Math.ceil(100 / c.rate) / 100, max: Math.floor(1e9 / c.rate * 100) / 100}; }
+function applyMethod() {
+  const c = CUR[$('#method').value], lim = limits(c), input = $('#amount');
+  $('#amount-label').textContent = `Сумма, ${c.sym}`;
+  input.min = lim.min; input.max = lim.max; input.step = c.rate === 1 ? 1 : 0.01; input.placeholder = c.rate === 1 ? '100' : '10';
+  const value = Number(input.value), note = $('#rate-note');
+  note.style.display = c.rate === 1 ? 'none' : '';
+  note.textContent = c.rate === 1 ? '' : `В кабинете суммы хранятся в ₽: ${value > 0 ? `≈ ${num(Math.round(value * c.rate))} ₽, ` : ''}курс 1 ${c.sym} = ${c.rate} ₽.`;
+}
 let payments = [], loaded = false, loading = false;
 let currentPage = 1;
 const pageSize = 8;
@@ -81,17 +93,19 @@ async function load() {
     return false;
   } finally { loading = false; $('#refresh').disabled = false; }
 }
-function openPayment() { $('#form-error').textContent = ''; dialog.showModal(); $('#description').focus(); }
+function openPayment() { $('#form-error').textContent = ''; applyMethod(); dialog.showModal(); $('#description').focus(); }
 $('#create').onclick = openPayment; $('#nav-create').onclick = openPayment;
 $('#close').onclick = () => dialog.close();
+$('#method').onchange = applyMethod; $('#amount').oninput = applyMethod;
 $('#payment-form').onsubmit = async event => {
-  event.preventDefault(); const description = $('#description').value.trim(), rub = Number($('#amount').value);
-  if (!description || !Number.isSafeInteger(rub) || rub < 1 || rub > 1000000000) {
-    $('#form-error').textContent = 'Укажите описание и целую сумму от 1 до 1 000 000 000 ₽.'; return;
+  event.preventDefault(); const description = $('#description').value.trim(), c = CUR[$('#method').value], amount = Number($('#amount').value), rub = c.rate === 1 ? amount : Math.round(amount * c.rate);
+  if (!description || !(c.rate === 1 ? Number.isSafeInteger(amount) : Number.isFinite(amount)) || !Number.isSafeInteger(rub) || rub < 1 || rub > 1000000000) {
+    const lim = limits(c);
+    $('#form-error').textContent = c.rate === 1 ? 'Укажите описание и целую сумму от 1 до 1 000 000 000 ₽.' : `Укажите описание и сумму от ${num(lim.min)} до ${num(lim.max)} ${c.sym}.`; return;
   }
   $('#submit').disabled = true; $('#form-error').textContent = '';
   try {
-    const result = await request('/api/payments', {method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({description, rub, method: $('#method').value})});
+    const result = await request('/api/payments', {method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({description, rub, method: $('#method').value, currency: c.code, amount})});
     dialog.close(); $('#payment-form').reset(); notify(`Платёж #${result.id} создан.`); await load();
   } catch (error) { $('#form-error').textContent = error.message; }
   finally { $('#submit').disabled = false; }

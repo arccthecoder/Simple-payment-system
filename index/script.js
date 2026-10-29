@@ -1,5 +1,18 @@
 const $ = s => document.querySelector(s);
-const fmt = n => Math.round(n).toLocaleString('ru-RU') + ' ₽';
+// Валюты способов оплаты. rate — сколько ₽ в одной единице валюты (демо-курс, ЦБ РФ ≈ 83 ₽/$; USDT приравнен к USD).
+// Все суммы в коде считаются в рублях, а в нужную валюту переводятся только при показе.
+const CUR = {
+	'Кошелёк': { code: 'RUB', sym: '₽', rate: 1, d: 0 },
+	'Карта': { code: 'RUB', sym: '₽', rate: 1, d: 0 },
+	'СБП': { code: 'RUB', sym: '₽', rate: 1, d: 0 },
+	'Crypto': { code: 'USDT', sym: 'USDT', rate: 83, d: 2 },
+	'PayPal': { code: 'USD', sym: '$', rate: 83, d: 2 }
+};
+let activeCur = CUR['Кошелёк'];
+const fmt = (n, c = activeCur) => {
+	const v = n / c.rate;
+	return (c.d ? v : Math.round(v)).toLocaleString('ru-RU', { minimumFractionDigits: c.d, maximumFractionDigits: c.d }) + ' ' + c.sym;
+};
 
 // тема
 $('#theme').onclick = () => {
@@ -23,7 +36,7 @@ document.querySelectorAll('[data-n]').forEach(el => {
 });
 
 // бегущая строка
-$('#marq').textContent = ('ВИЗА · МИР · СБП · QR-ОПЛАТА · РАССРОЧКА · ПОДПИСКИ · ЧЕКИ 54-ФЗ · ВОЗВРАТЫ · API · ').repeat(6);
+$('#marq').textContent = ('КОШЕЛЁК · КАРТА · СБП · CRYPTO · USDT · PAYPAL · РАССРОЧКА · ПОДПИСКИ · ЧЕКИ 54-ФЗ · ВОЗВРАТЫ · API · ').repeat(6);
 
 // наклон карточек за курсором
 document.querySelectorAll('.tilt').forEach(c => {
@@ -65,7 +78,9 @@ $('#pay').onclick = async () => {
 	const payment = {
 		description: `Оплата через ${method}`,
 		rub: total,
-		method
+		method,
+		currency: activeCur.code,
+		amount: +(total / activeCur.rate).toFixed(activeCur.d)
 	};
 
 	const payButton = $('#pay');
@@ -99,6 +114,7 @@ $('#pay').onclick = async () => {
 	}
 };
 function showReceipt(method, paymentId) {
+	const c = CUR[method];
 	const total = goods.reduce((sum, item, index) => {
 		return sum + item[1] * qty[index];
 	}, 0);
@@ -110,18 +126,23 @@ function showReceipt(method, paymentId) {
 				qty[index]
 					? `<div>
 							<span>${item[0]} ×${qty[index]}</span>
-							<span>${fmt(item[1] * qty[index])}</span>
+							<span>${fmt(item[1] * qty[index], c)}</span>
 						</div>`
 					: ''
 			)
 			.join('') +
 		`<hr>
-		<div><span>НДС 20%</span><span>${fmt(total / 6)}</span></div>
-		<div><b>ИТОГО</b><b>${fmt(total)}</b></div>
+		<div><span>НДС 20%</span><span>${fmt(total / 6, c)}</span></div>
+		<div><b>ИТОГО</b><b>${fmt(total, c)}</b></div>
 		<div><span>Оплата</span><span>${method}</span></div>`;
 
 	requestAnimationFrame(() => $('#paper').classList.add('out'));
 }
+$('#methods').onchange = e => {
+	activeCur = CUR[e.target.value];
+	$('#prog i').style.width = 0; $('#status').textContent = 'Добавьте товары в корзину';
+	renderItems();
+};
 renderItems();
 
 // как идёт платёж
@@ -148,13 +169,13 @@ timer = setInterval(() => setStep((cur + 1) % 4), 2800);
 
 // живая панель
 let sum = 0, cnt = 0, pts = Array(20).fill(40);
-const mths = ['Карта', 'СБП', 'Кошелёк'];
+const mths = ['Кошелёк', 'Карта', 'СБП', 'Crypto', 'PayPal'];
 function tick() {
-	const a = Math.round((500 + Math.random() * 7000) / 10) * 10, m = mths[Math.floor(Math.random() * 3)];
+	const a = Math.round((500 + Math.random() * 7000) / 10) * 10, m = mths[Math.floor(Math.random() * mths.length)];
 	sum += a; cnt++;
-	$('#sum').textContent = fmt(sum); $('#cnt').textContent = cnt; $('#ofd').textContent = cnt;
+	$('#sum').textContent = fmt(sum, CUR['Кошелёк']); $('#cnt').textContent = cnt; $('#ofd').textContent = cnt;
 	const li = document.createElement('li');
-	li.innerHTML = `<span>#${1000 + cnt} · ${m}</span><span>+${fmt(a)}</span>`;
+	li.innerHTML = `<span>#${1000 + cnt} · ${m}</span><span>+${fmt(a, CUR[m])}</span>`;
 	$('#feed').prepend(li);
 	while ($('#feed').children.length > 5) $('#feed').lastChild.remove();
 	pts.push(80 - Math.min(70, a / 110)); pts.shift();
@@ -164,12 +185,12 @@ tick(); tick(); setInterval(tick, 2200);
 
 // калькулятор
 function calc() {
-	const t = +$('#turn').value, r = +$('#method').value;
+	const t = +$('#turn').value, r = +$('#method').value, c = CUR[$('#method').selectedOptions[0].dataset.m];
 	const other = t * (r + .8) / 100 + 3000, mine = t * Math.max(r - .6, .3) / 100;
-	$('#turnV').textContent = fmt(t);
-	$('#v1').textContent = fmt(other); $('#v2').textContent = fmt(mine);
+	$('#turnV').textContent = fmt(t, c);
+	$('#v1').textContent = fmt(other, c); $('#v2').textContent = fmt(mine, c);
 	$('#b1').style.width = '100%'; $('#b2').style.width = Math.max(mine / other * 100, 4) + '%';
-	$('#sv').textContent = fmt((other - mine) * 12);
+	$('#sv').textContent = fmt((other - mine) * 12, c);
 }
 ['#turn', '#method'].forEach(s => $(s).addEventListener('input', calc));
 calc();

@@ -84,11 +84,19 @@ func main() {
 		switch r.Method {
 		case http.MethodGet:
 			// возвращаем информацию о выбранном платеже.
-			json.NewEncoder(w).Encode(paymentModule.Info(id))
+			info, ok := paymentModule.Info(id)
+			if !ok {
+				http.Error(w, `{"error":"payment not found"}`, http.StatusNotFound)
+				return
+			}
+			json.NewEncoder(w).Encode(info)
 
 		case http.MethodDelete:
 			// отменяем выбранный платеж и сообщаем об успешной отмене.
-			paymentModule.Cancel(id)
+			if !paymentModule.Cancel(id) {
+				http.Error(w, `{"error":"payment not found"}`, http.StatusNotFound)
+				return
+			}
 
 			json.NewEncoder(w).Encode(map[string]string{
 				"status": "cancelled",
@@ -117,6 +125,10 @@ func selectedPaymentMethod(method string) (payment.PaymentMethod, bool) {
 		return methods.NewSBP(), true
 	case "Кошелёк":
 		return methods.NewWallet(), true
+	case "Crypto":
+		return methods.NewCrypto(), true
+	case "PayPal":
+		return methods.NewPayPal(), true
 	default:
 		return nil, false
 	}

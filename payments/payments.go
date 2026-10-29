@@ -1,11 +1,14 @@
 package payment
 
+import "sync"
+
 type PaymentMethod interface {
 	Pay(rub int) int
 	Cancel(id int)
 }
 
 type PaymentModule struct {
+	mtx          sync.RWMutex
 	paymentsInfo map[int]paymentRecord
 
 	paymentMethod PaymentMethod
@@ -39,6 +42,8 @@ func (p *PaymentModule) Pay(description string, rub int) int {
 func (p *PaymentModule) PayWithMethod(method PaymentMethod, description string, rub int) int {
 	id := method.Pay(rub)
 
+	p.mtx.Lock()
+	defer p.mtx.Unlock()
 	info := PaymentInfo{
 		Description: description,
 		Rub:         rub,
@@ -53,7 +58,6 @@ func (p *PaymentModule) PayWithMethod(method PaymentMethod, description string, 
 		info:   info,
 		method: method,
 	}
-
 	return id
 }
 
@@ -65,10 +69,12 @@ func (p *PaymentModule) PayWithMethod(method PaymentMethod, description string, 
 Возвращает:
 - ничего не возвращает
 */
-func (p *PaymentModule) Cancel(id int) {
+func (p *PaymentModule) Cancel(id int) bool {
+	p.mtx.Lock()
+	defer p.mtx.Unlock()
 	record, ok := p.paymentsInfo[id]
 	if !ok {
-		return
+		return false
 	}
 
 	record.method.Cancel(id)
@@ -76,6 +82,7 @@ func (p *PaymentModule) Cancel(id int) {
 	record.info.Cancelled = true
 
 	p.paymentsInfo[id] = record
+	return true
 }
 
 /*
@@ -86,13 +93,15 @@ func (p *PaymentModule) Cancel(id int) {
 Возвращает:
 информацию о проведенной операции
 */
-func (p *PaymentModule) Info(id int) PaymentInfo {
+func (p *PaymentModule) Info(id int) (PaymentInfo, bool) {
+	p.mtx.RLock()
+	defer p.mtx.RUnlock()
 	record, ok := p.paymentsInfo[id]
 	if !ok {
-		return PaymentInfo{}
+		return PaymentInfo{}, false
 	}
 
-	return record.info
+	return record.info, true
 }
 
 /*
@@ -104,10 +113,11 @@ func (p *PaymentModule) Info(id int) PaymentInfo {
 1. информацию о всех проведенных операциях
 */
 func (p *PaymentModule) AllInfo() map[int]PaymentInfo {
+	p.mtx.RLock()
+	defer p.mtx.RUnlock()
 	tempMap := make(map[int]PaymentInfo, len(p.paymentsInfo))
 	for k, v := range p.paymentsInfo {
 		tempMap[k] = v.info
 	}
-
 	return tempMap
 }

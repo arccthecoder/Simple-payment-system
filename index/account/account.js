@@ -2,7 +2,7 @@
 const $ = selector => document.querySelector(selector);
 const money = value => new Intl.NumberFormat('ru-RU', {style: 'currency', currency: 'RUB', maximumFractionDigits: 0}).format(value);
 // Способы оплаты и их валюты. Сервер хранит только рубли (Rub), поэтому сумма в USDT/$ переводится в ₽ по демо-курсу (ЦБ РФ ≈ 83 ₽/$).
-const CUR = {'Кошелёк': {code: 'RUB', sym: '₽', rate: 1, d: 0}, 'Crypto': {code: 'USDT', sym: 'USDT', rate: 83, d: 2}, 'PayPal': {code: 'USD', sym: '$', rate: 83, d: 2}};
+const CUR = {'Кошелёк': {code: 'RUB', sym: '₽', rate: 1, d: 0}, 'Карта': {code: 'RUB', sym: '₽', rate: 1, d: 0}, 'СБП': {code: 'RUB', sym: '₽', rate: 1, d: 0}, 'Crypto': {code: 'USDT', sym: 'USDT', rate: 83, d: 2}, 'PayPal': {code: 'USD', sym: '$', rate: 83, d: 2}};
 const num = value => value.toLocaleString('ru-RU', {maximumFractionDigits: 2});
 function limits(c) { return c.rate === 1 ? {min: 1, max: 1000000000} : {min: Math.ceil(100 / c.rate) / 100, max: Math.floor(1e9 / c.rate * 100) / 100}; }
 function applyMethod() {
